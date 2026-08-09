@@ -1,0 +1,18 @@
+FROM docker.io/library/ubuntu:26.04
+
+# -- perform update and upgrade whenever possible
+RUN apt-get update --assume-yes && \
+    apt-get upgrade --assume-yes
+
+# -- install pre-reqs
+#    sqlite for testing
+#    postgresql client for connecting to postgresql
+RUN apt-get install sqlite3 postgresql-client --assume-yes
+
+# -- install python + packages 
+RUN apt-get install python3.14 --assume-yes && \
+    apt-get install python3-pytest python3-flask python3-fastapi --assume-yes && \
+    apt-get install python3-psycopg python3-psycopg-pool python3-sqlmodel python3-pydantic python3-sqlalchemy --assume-yes
+
+
+
