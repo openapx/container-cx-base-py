@@ -2,7 +2,7 @@ name: Build and Publish Container Image
 
 on:
   push:
-  pull_request:
+  
 
 env:
     # -- constants
@@ -28,7 +28,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu]
+        os: [ubuntu, rockylinux, debian]
 
     runs-on: ubuntu-latest
 
