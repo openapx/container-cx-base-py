@@ -1,21 +1,69 @@
 FROM docker.io/rockylinux/rockylinux:10.2-ubi
 
+
+# -- build ARGs
+
+
+# - default image name
+ARG ARG_OPENAPX_IMAGE_NAME=openapx-cx-base-py
+
+# - image ID
+ARG ARG_OPENAPX_IMAGE_ID=${ARG_OPENAPX_IMAGE_NAME}:0.0.0-local
+
+# - GitHub repository URL for the source code
+ARG ARG_OPENAPX_GITHUB_REPO_URL=
+
+# - GitHub commit URL
+ARG ARG_OPENAPX_GITHUB_COMMIT_URL=
+
+# - GitHub build URL
+ARG ARG_OPENAPX_GITHUB_BUILD_URL=
+
+
+
+# -- OCI labels
+LABEL org.opencontainers.image.title="${ARG_OPENAPX_IMAGE_NAME}" \
+      org.opencontainers.image.description="Base openapx container image for Python Web apps and APIs" \
+      org.opencontainers.image.version="${ARG_OPENAPX_IMAGE_ID}" \
+      org.opencontainers.image.source="${ARG_OPENAPX_GITHUB_REPO_URL}" \
+      org.opencontainers.image.revision="${ARG_OPENAPX_GITHUB_COMMIT_URL}" \
+      org.opencontainers.image.url="${ARG_OPENAPX_GITHUB_BUILD_URL}" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.vendor="openapx open-source project" \
+      org.opencontainers.image.created="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+
+# -- add bin scripts
+COPY --chmod=0555 .scripts/bin/*.sh /opt/openapx/bin/
+
+
+# note: RUN statemens will be collapsed into a single layer to reduce image size in the future
+
+
 # -- perform update and upgrade whenever possible
 RUN dnf upgrade --refresh --assumeyes
+
+# -- create/update CONTAINER file
+#    note: CONTAINER file exists in the root directory
+RUN /opt/openapx/bin/container.sh 
 
 # -- install pre-reqs
 #    sqlite for testing
 #    postgresql (client) for connecting to postgresql
-RUN dnf install sqlite --assumeyes
-
+RUN dnf install sqlite postgresql --assumeyes && \
+    dnf install nginx --assumeyes
 
 # -- install python + packages 
 #    python 3.12 already installed
-RUN dnf install python3-pip --assumeyes && \
-    python -m pip install pytest flask fastapi && \
-    dnf install python3-psycopg2 --assumeyes && \
-    python -m pip install psycopg2-pool pydantic sqlalchemy sqlmodel 
+RUN dnf install python3 python3-pip --assumeyes && \
+    pip install pytest pytest-asyncio && \
+    pip install uvicorn fastapi requests && \
+    pip install asyncpg aiosqlite && \
+    pip install pydantic sqlalchemy sqlmodel 
 
+# -- clean up dnf cache
+RUN dnf clean all && \
+    rm -rf /var/cache/dnf
     
 
 

@@ -18,7 +18,6 @@ ARG ARG_OPENAPX_GITHUB_COMMIT_URL=
 ARG ARG_OPENAPX_GITHUB_BUILD_URL=
 
 
-
 # -- OCI labels
 LABEL org.opencontainers.image.title="${ARG_OPENAPX_IMAGE_NAME}" \
       org.opencontainers.image.description="Base openapx container image for Python Web apps and APIs" \

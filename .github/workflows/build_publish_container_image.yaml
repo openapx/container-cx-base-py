@@ -2,7 +2,7 @@ name: Build and Publish Container Image
 
 on:
   push:
-  pull_request:
+  
 
 env:
     # -- constants
@@ -20,6 +20,9 @@ env:
     # - image name
     OPENAPX_IMAGE_NAME: openapx-cx-base-py
 
+    # - container context
+    #   note: assume development context unless overridden by main branch
+    OPENAPX_CONTAINER_IDCONTEXT: "-development"
 
 jobs:
   build-and-push:
@@ -28,7 +31,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu]
+        os: [ubuntu, rockylinux, debian]
 
     runs-on: ubuntu-latest
 
@@ -52,6 +55,14 @@ jobs:
           echo "Branch name is ${{ env.OPENAPX_BRANCH_NAME }}"
           echo "----------------------------------------"  
 
+
+      - name: Identify production container ID context
+        if: ${{ env.OPENAPX_BRANCH_NAME == 'main' }}
+        env:
+            OPENAPX_CONTAINER_IDCONTEXT: ""
+        run:
+            echo "-- set production context on Container ID"
+
       - name: Set up environment
         env:
             # - fully qualified image base name
@@ -60,7 +71,7 @@ jobs:
 
             # - unique container identifier
             #   note: combines image base name, version, and workflow run ID to provide some form of uniqueness
-            OPENAPX_CONTAINER_ID: ${{ env.OPENAPX_IMAGE_FQ_BASENAME }}:${{ vars.VERSION_MAJOR }}.${{ vars.VERSION_MINOR }}.${{ github.run_number }}-${{ matrix.os }}-${{ github.run_id }}
+            OPENAPX_CONTAINER_ID: ${{ env.OPENAPX_IMAGE_NAME }}:${{ vars.VERSION_MAJOR }}.${{ vars.VERSION_MINOR }}.${{ github.run_number }}-${{ matrix.os }}-${{ github.run_id }}${{ env.OPENAPX_CONTAINER_IDCONTEXT}}
 
             # - image version references
             #   note: use of github.run_number for patch version
@@ -84,13 +95,19 @@ jobs:
 
             # -- standard env entries
             echo "OPENAPX_IMAGE_FQ_BASENAME=${{ env.OPENAPX_IMAGE_FQ_BASENAME }}" >> $GITHUB_ENV
+
+            echo "OPENAPX_CONTAINER_IDCONTEXT=${{ env.OPENAPX_CONTAINER_IDCONTEXT }}" >> $GITHUB_ENV
             echo "OPENAPX_CONTAINER_ID=${{ env.OPENAPX_CONTAINER_ID }}" >> $GITHUB_ENV
+
             echo "OPENAPX_IMAGE_VERSION_MAJOR_MINOR=${{ env.OPENAPX_IMAGE_VERSION_MAJOR_MINOR }}" >> $GITHUB_ENV
             echo "OPENAPX_IMAGE_VERSION_MAJOR_MINOR_PATCH=${{ env.OPENAPX_IMAGE_VERSION_MAJOR_MINOR_PATCH }}" >> $GITHUB_ENV
+
             echo "OPENAPX_GITHUB_COMMIT_SHA=${{ env.OPENAPX_GITHUB_COMMIT_SHA }}" >> $GITHUB_ENV
+
             echo "OPENAPX_GITHUB_RUNID=${{ env.OPENAPX_GITHUB_RUNID }}" >> $GITHUB_ENV
             echo "OPENAPX_GITHUB_REPO_URL=${{ env.OPENAPX_GITHUB_REPO_URL }}" >> $GITHUB_ENV
             echo "OPENAPX_GITHUB_COMMIT_URL=${{ env.OPENAPX_GITHUB_COMMIT_URL }}" >> $GITHUB_ENV
+
 
             # -- derived env entries
             echo "OPENAPX_GITHUB_COMMIT_SHORT_SHA=$(echo ${{ env.OPENAPX_GITHUB_COMMIT_SHA }} | cut -c1-7)" >> $GITHUB_ENV
