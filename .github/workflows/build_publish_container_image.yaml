@@ -60,7 +60,7 @@ jobs:
 
             # - unique container identifier
             #   note: combines image base name, version, and workflow run ID to provide some form of uniqueness
-            OPENAPX_CONTAINER_ID: ${{ env.OPENAPX_IMAGE_FQ_BASENAME }}:${{ vars.VERSION_MAJOR }}.${{ vars.VERSION_MINOR }}.${{ github.run_number }}-${{ matrix.os }}-${{ github.run_id }}
+            OPENAPX_CONTAINER_ID: ${{ env.OPENAPX_IMAGE_NAME }}:${{ vars.VERSION_MAJOR }}.${{ vars.VERSION_MINOR }}.${{ github.run_number }}-${{ matrix.os }}-${{ github.run_id }}
 
             # - image version references
             #   note: use of github.run_number for patch version
