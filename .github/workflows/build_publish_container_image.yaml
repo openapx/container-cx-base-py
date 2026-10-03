@@ -139,5 +139,36 @@ jobs:
                 --file Containerfile-${{ matrix.os }} \
                 .
 
+      - name: Tag development image
+        if: ${{ env.OPENAPX_BRANCH_NAME == 'development' }}
+        run: |
+            docker tag ${OPENAPX_IMAGE_TAG_BUILDREF} ${OPENAPX_IMAGE_TAG_LATEST}-development
+            docker tag ${OPENAPX_IMAGE_TAG_BUILDREF} ${OPENAPX_IMAGE_TAG_MAJOR_MINOR}-development
+            docker tag ${OPENAPX_IMAGE_TAG_BUILDREF} ${OPENAPX_IMAGE_TAG_MAJOR_MINOR_PATCH_COMMIT}-development
+
+            docker rmi ${OPENAPX_IMAGE_TAG_BUILDREF}
 
 
+      - name: Tag production image
+        if: ${{ env.OPENAPX_BRANCH_NAME == 'main' }}
+        run: |
+            docker tag ${OPENAPX_IMAGE_TAG_BUILDREF} ${OPENAPX_IMAGE_TAG_LATEST}
+            docker tag ${OPENAPX_IMAGE_TAG_BUILDREF} ${OPENAPX_IMAGE_TAG_MAJOR_MINOR}
+            docker tag ${OPENAPX_IMAGE_TAG_BUILDREF} ${OPENAPX_IMAGE_TAG_MAJOR_MINOR_PATCH}
+            docker tag ${OPENAPX_IMAGE_TAG_BUILDREF} ${OPENAPX_IMAGE_TAG_MAJOR_MINOR_PATCH_COMMIT}
+            docker tag ${OPENAPX_IMAGE_TAG_BUILDREF} ${OPENAPX_IMAGE_TAG_MAJOR_MINOR_PATCH_BUILD}
+
+            docker rmi ${OPENAPX_IMAGE_TAG_BUILDREF}
+
+
+      - name: Connect to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+
+      - name: Push image
+        if: ${{ env.OPENAPX_BRANCH_NAME == 'development' || env.OPENAPX_BRANCH_NAME == 'main' }}
+        run: |
+            docker image push --all-tags ${OPENAPX_IMAGE_FQ_BASENAME}
