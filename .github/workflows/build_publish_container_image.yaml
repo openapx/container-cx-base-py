@@ -56,7 +56,7 @@ jobs:
           echo "----------------------------------------"  
 
 
-      - name: Identify development mode
+      - name: Identify production container ID context
         if: ${{ env.OPENAPX_BRANCH_NAME == 'main' }}
         env:
             OPENAPX_CONTAINER_IDCONTEXT: ""
@@ -108,7 +108,7 @@ jobs:
             echo "OPENAPX_GITHUB_REPO_URL=${{ env.OPENAPX_GITHUB_REPO_URL }}" >> $GITHUB_ENV
             echo "OPENAPX_GITHUB_COMMIT_URL=${{ env.OPENAPX_GITHUB_COMMIT_URL }}" >> $GITHUB_ENV
 
-            
+
             # -- derived env entries
             echo "OPENAPX_GITHUB_COMMIT_SHORT_SHA=$(echo ${{ env.OPENAPX_GITHUB_COMMIT_SHA }} | cut -c1-7)" >> $GITHUB_ENV
 
