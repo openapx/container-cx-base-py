@@ -1,0 +1,21 @@
+FROM docker.io/rockylinux/rockylinux:10.2-ubi
+
+# -- perform update and upgrade whenever possible
+RUN dnf upgrade --refresh --assumeyes
+
+# -- install pre-reqs
+#    sqlite for testing
+#    postgresql (client) for connecting to postgresql
+RUN dnf install sqlite --assumeyes
+
+
+# -- install python + packages 
+#    python 3.12 already installed
+RUN dnf install python3-pip --assumeyes && \
+    python -m pip install pytest flask fastapi && \
+    dnf install python3-psycopg2 --assumeyes && \
+    python -m pip install psycopg2-pool pydantic sqlalchemy sqlmodel 
+
+    
+
+

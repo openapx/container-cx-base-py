@@ -1,0 +1,77 @@
+FROM docker.io/library/ubuntu:26.04
+
+# -- build ARGs
+
+# - default image name
+ARG ARG_OPENAPX_IMAGE_NAME=openapx-cx-base-py
+
+# - image ID
+ARG ARG_OPENAPX_IMAGE_ID=${ARG_OPENAPX_IMAGE_NAME}:0.0.0-local
+
+# - GitHub repository URL for the source code
+ARG ARG_OPENAPX_GITHUB_REPO_URL=
+
+# - GitHub commit URL
+ARG ARG_OPENAPX_GITHUB_COMMIT_URL=
+
+# - GitHub build URL
+ARG ARG_OPENAPX_GITHUB_BUILD_URL=
+
+
+
+# -- OCI labels
+LABEL org.opencontainers.image.title="${ARG_OPENAPX_IMAGE_NAME}" \
+      org.opencontainers.image.description="Base openapx container image for Python Web apps and APIs" \
+      org.opencontainers.image.version="${ARG_OPENAPX_IMAGE_ID}" \
+      org.opencontainers.image.source="${ARG_OPENAPX_GITHUB_REPO_URL}" \
+      org.opencontainers.image.revision="${ARG_OPENAPX_GITHUB_COMMIT_URL}" \
+      org.opencontainers.image.url="${ARG_OPENAPX_GITHUB_BUILD_URL}" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.vendor="openapx open-source project" \
+      org.opencontainers.image.created="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+
+# -- add bin scripts
+COPY --chmod=0555 .scripts/bin/*.sh /opt/openapx/bin/
+
+
+# note: RUN statemens will be collapsed into a single layer to reduce image size in the future
+
+# -- perform update and upgrade whenever possible
+RUN apt-get update --assume-yes && \
+    apt-get upgrade --assume-yes
+
+# -- create/update CONTAINER file
+#    note: CONTAINER file exists in the root directory
+RUN /opt/openapx/bin/container.sh 
+
+# -- install pre-reqs
+#    sqlite for testing
+#    postgresql client for connecting to postgresql
+#    uvicorn for running ASGI applications
+#    nginx for SSL termination and reverse proxy
+RUN apt-get install sqlite3 postgresql-client --assume-yes && \
+    apt-get install uvicorn nginx --assume-yes 
+
+# -- install python + packages 
+#    python3.14 as the main python interpreter
+#    pytest for testing
+#    asyncio for asynchronous programming
+#    uvicorn for running ASGI applications
+#    fastapi for building APIs
+#    requests for making HTTP requests
+#    asyncpg for asynchronous PostgreSQL access
+#    aiosqlite for asynchronous SQLite access
+#    sqlmodel for working with SQL databases using Pydantic models
+#    pydantic for data validation and settings management
+#    sqlalchemy for ORM and database interactions
+RUN apt-get install python3.14 python3-pytest python3-pytest-asyncio python3-uvicorn --assume-yes && \
+    apt-get install python3-fastapi python3-requests --assume-yes && \
+    apt-get install python3-asyncpg python3-aiosqlite --assume-yes && \
+    apt-get install python3-sqlmodel python3-pydantic python3-sqlalchemy --assume-yes
+
+# -- clean up apt cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
+
