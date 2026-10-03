@@ -20,9 +20,6 @@ env:
     # - image name
     OPENAPX_IMAGE_NAME: openapx-cx-base-py
 
-    # - container context
-    #   note: assume development context unless overridden by main branch
-    OPENAPX_CONTAINER_IDCONTEXT: "-development"
 
 jobs:
   build-and-push:
@@ -56,12 +53,18 @@ jobs:
           echo "----------------------------------------"  
 
 
+      - name: Identify development container ID context
+        run: |
+          echo "-- set default container ID context to development"
+          echo "OPENAPX_CONTAINER_IDCONTEXT=-development" >> $GITHUB_ENV
+
+
       - name: Identify production container ID context
         if: ${{ env.OPENAPX_BRANCH_NAME == 'main' }}
-        env:
-            OPENAPX_CONTAINER_IDCONTEXT: ""
-        run:
+        run: |
             echo "-- set production context on Container ID"
+            echo "OPENAPX_CONTAINER_IDCONTEXT=" >> $GITHUB_ENV
+
 
       - name: Set up environment
         env:
@@ -96,7 +99,6 @@ jobs:
             # -- standard env entries
             echo "OPENAPX_IMAGE_FQ_BASENAME=${{ env.OPENAPX_IMAGE_FQ_BASENAME }}" >> $GITHUB_ENV
 
-            echo "OPENAPX_CONTAINER_IDCONTEXT=${{ env.OPENAPX_CONTAINER_IDCONTEXT }}" >> $GITHUB_ENV
             echo "OPENAPX_CONTAINER_ID=${{ env.OPENAPX_CONTAINER_ID }}" >> $GITHUB_ENV
 
             echo "OPENAPX_IMAGE_VERSION_MAJOR_MINOR=${{ env.OPENAPX_IMAGE_VERSION_MAJOR_MINOR }}" >> $GITHUB_ENV
