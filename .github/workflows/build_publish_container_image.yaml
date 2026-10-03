@@ -20,6 +20,8 @@ env:
     # - image name
     OPENAPX_IMAGE_NAME: openapx-cx-base-py
 
+    # - container context
+    OPENAPX_CONTAINER_IDCONTEXT: ""
 
 jobs:
   build-and-push:
@@ -52,6 +54,16 @@ jobs:
           echo "Branch name is ${{ env.OPENAPX_BRANCH_NAME }}"
           echo "----------------------------------------"  
 
+
+      - name: Identify development mode
+        if: ${{ env.OPENAPX_BRANCH_NAME == 'development' }}
+        env:
+            OPENAPX_CONTAINER_IDCONTEXT: -development
+        run: |
+          echo "OPENAPX_CONTAINER_IDCONTEXT=${{ env.OPENAPX_CONTAINER_IDCONTEXT }}" >> $GITHUB_ENV
+        
+
+
       - name: Set up environment
         env:
             # - fully qualified image base name
@@ -60,7 +72,7 @@ jobs:
 
             # - unique container identifier
             #   note: combines image base name, version, and workflow run ID to provide some form of uniqueness
-            OPENAPX_CONTAINER_ID: ${{ env.OPENAPX_IMAGE_NAME }}:${{ vars.VERSION_MAJOR }}.${{ vars.VERSION_MINOR }}.${{ github.run_number }}-${{ matrix.os }}-${{ github.run_id }}
+            OPENAPX_CONTAINER_ID: ${{ env.OPENAPX_IMAGE_NAME }}:${{ vars.VERSION_MAJOR }}.${{ vars.VERSION_MINOR }}.${{ github.run_number }}-${{ matrix.os }}-${{ github.run_id }}${{ env.OPENAPX_CONTAINER_IDCONTEXT}}
 
             # - image version references
             #   note: use of github.run_number for patch version
