@@ -57,7 +57,7 @@ RUN dnf install sqlite postgresql --assumeyes && \
 #    python 3.12 already installed
 RUN dnf install python3 python3-pip --assumeyes && \
     pip install pytest pytest-asyncio && \
-    pip install uvicorn fastapi requests && \
+    pip install uvicorn fastapi httpx && \
     pip install asyncpg aiosqlite && \
     pip install pydantic sqlalchemy sqlmodel 
 

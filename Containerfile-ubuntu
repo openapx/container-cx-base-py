@@ -65,7 +65,7 @@ RUN apt-get install sqlite3 postgresql-client --assume-yes && \
 #    pydantic for data validation and settings management
 #    sqlalchemy for ORM and database interactions
 RUN apt-get install python3.14 python3-pytest python3-pytest-asyncio python3-uvicorn --assume-yes && \
-    apt-get install python3-fastapi python3-requests --assume-yes && \
+    apt-get install python3-fastapi python3-httpx --assume-yes && \
     apt-get install python3-asyncpg python3-aiosqlite --assume-yes && \
     apt-get install python3-sqlmodel python3-pydantic python3-sqlalchemy --assume-yes
 
