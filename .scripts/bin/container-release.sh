@@ -1,14 +1,14 @@
 #! /bin/bash
 #
-# Create/update CONTAINER reference file in root directory
+# Create/update container-release reference file in directory /opt/openapx
 #
-# Usage: ./container.sh
+# Usage: ./container-release.sh
 #
-# This script will create or update the CONTAINER reference file in the root directory.
-# The CONTAINER file contains metadata about the container image, such as its name,
+# This script will create or update the container-release reference file in the directory /opt/openapx.
+# The container-release file contains metadata about the container image, such as its name,
 # version, source repository, and build information.
 #
-# The script relies on the container file ARG with prefix ARG_OPENAPX_*. If a CONTAINER
+# The script relies on the container-release file ARG with prefix ARG_OPENAPX_*. If a container-release 
 # file entry is missing, it is likely that the ARG_OPENAPX_* argument could not be resolved.
 #
 #
