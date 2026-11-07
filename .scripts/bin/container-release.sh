@@ -13,11 +13,19 @@
 #
 #
 
+# -- container release file 
+CONTAINER_RELEASE=/opt/openapx/container-release
+
+
+# -- ensure parent directory for container-release exists
+mkdir -p $(dirname $CONTAINER_RELEASE)
+
+
 # -- new CONTAINER file
 
-if [ ! -f CONTAINER ]; then
+if [ ! -f $CONTAINER_RELEASE ]; then
 
-cat <<EOF > /CONTAINER
+cat <<EOF > $CONTAINER_RELEASE
 # Container metadata information
 #
 # Note: The information provided was current at the time of the container build.
@@ -40,18 +48,18 @@ fi
 # -- Update CONTAINER file
 
 # - container reference
-sed -i "s|^CONTAINER=.*|CONTAINER=${ARG_OPENAPX_IMAGE_ID}|" CONTAINER
+sed -i "s|^CONTAINER=.*|CONTAINER=${ARG_OPENAPX_IMAGE_ID}|" $CONTAINER_RELEASE
 
 # - GitHub repository
-sed -i "s|^GITHUB_REPO_URL=.*|GITHUB_REPO_URL=${ARG_OPENAPX_GITHUB_REPO_URL}|" CONTAINER
+sed -i "s|^GITHUB_REPO_URL=.*|GITHUB_REPO_URL=${ARG_OPENAPX_GITHUB_REPO_URL}|" $CONTAINER_RELEASE
 
 # - GitHub commit URL
-sed -i "s|^GITHUB_REPO_COMMIT_URL=.*|GITHUB_REPO_COMMIT_URL=${ARG_OPENAPX_GITHUB_COMMIT_URL}|" CONTAINER
+sed -i "s|^GITHUB_REPO_COMMIT_URL=.*|GITHUB_REPO_COMMIT_URL=${ARG_OPENAPX_GITHUB_COMMIT_URL}|" $CONTAINER_RELEASE
 
 # - GitHub build URL
-sed -i "s|^GITHUB_REPO_BUILD_URL=.*|GITHUB_REPO_BUILD_URL=${ARG_OPENAPX_GITHUB_BUILD_URL}|" CONTAINER
+sed -i "s|^GITHUB_REPO_BUILD_URL=.*|GITHUB_REPO_BUILD_URL=${ARG_OPENAPX_GITHUB_BUILD_URL}|" $CONTAINER_RELEASE
 
 # - append current container to PROVENANCE section
-echo "${ARG_OPENAPX_IMAGE_ID}" >> CONTAINER
+echo "${ARG_OPENAPX_IMAGE_ID}" >> $CONTAINER_RELEASE
 
 
