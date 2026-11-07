@@ -43,9 +43,11 @@ COPY --chmod=0555 .scripts/bin/*.sh /opt/openapx/bin/
 # -- perform update and upgrade whenever possible
 RUN dnf upgrade --refresh --assumeyes
 
-# -- create/update CONTAINER file
-#    note: CONTAINER file exists in the root directory
-RUN /opt/openapx/bin/container.sh 
+
+# -- create/update container release reference file
+#    note: container release file exists in /opt/openapx 
+RUN /opt/openapx/bin/container-release.sh 
+
 
 # -- install pre-reqs
 #    sqlite for testing

@@ -41,9 +41,11 @@ COPY --chmod=0555 .scripts/bin/*.sh /opt/openapx/bin/
 RUN apt-get update --assume-yes && \
     apt-get upgrade --assume-yes
 
-# -- create/update CONTAINER file
-#    note: CONTAINER file exists in the root directory
-RUN /opt/openapx/bin/container.sh 
+
+# -- create/update container release reference file
+#    note: container release file exists in /opt/openapx 
+RUN /opt/openapx/bin/container-release.sh 
+
 
 # -- install pre-reqs
 #    sqlite for testing
@@ -59,14 +61,14 @@ RUN apt-get install sqlite3 postgresql-client --assume-yes && \
 #    asyncio for asynchronous programming
 #    uvicorn for running ASGI applications
 #    fastapi for building APIs
-#    requests for making HTTP requests
+#    httpx for making HTTP requests
 #    asyncpg for asynchronous PostgreSQL access
 #    aiosqlite for asynchronous SQLite access
 #    sqlmodel for working with SQL databases using Pydantic models
 #    pydantic for data validation and settings management
 #    sqlalchemy for ORM and database interactions
-RUN apt-get install python3 python3-pytest python3-pytest-asyncio python3-uvicorn --assume-yes && \
-    apt-get install python3-fastapi python3-httpx --assume-yes && \
+RUN apt-get install python3 python3-pytest python3-pytest-asyncio --assume-yes && \
+    apt-get install python3-uvicorn python3-fastapi python3-httpx --assume-yes && \
     apt-get install python3-asyncpg python3-aiosqlite --assume-yes && \
     apt-get install python3-sqlmodel python3-pydantic python3-sqlalchemy --assume-yes
 
